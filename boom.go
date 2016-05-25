@@ -18,7 +18,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"myDir/boom/boomer"
+	"stressengineio/boomer"
+
 	"net/http"
 	gourl "net/url"
 	"os"

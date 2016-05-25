@@ -3,10 +3,12 @@ package boomer
 import (
 	"fmt"
 	"log"
-	"myDir/boom/engineio"
-	"myDir/boom/engineio2"
+	"stressengineio/engineio2"
 	"sync/atomic"
 )
+
+var messageCount int64
+var connectionCount int64
 
 // sunny :Special handling for web socket connection
 func (b *Boomer) runWorkerEngineIo(n int) {
@@ -69,7 +71,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 				fmt.Printf("Connected :%d\n", connectionCount)
 			case "Close":
 				atomic.AddInt64(&connectionCount, -1)
-				fmt.Printf("Connected :%d\n", connectionCount)
+				fmt.Printf("Connected -1:%d\n", connectionCount)
 			case "Message":
 				//fmt.Print("got a message")
 				//atomic.AddInt64(&messageCount, 1)
@@ -79,7 +81,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 	}
 }
 
-func handleNotOpen(ev *engineioclient.Event, client *engineioclient.Client, opened *bool) {
+/*func handleNotOpen(ev *engineioclient.Event, client *engineioclient.Client, opened *bool) {
 	if !*opened && ev.Type != "Open" {
 		//test.Errorf("The first event should be open!")
 		log.Fatal("The first event should be open!")
@@ -89,16 +91,13 @@ func handleNotOpen(ev *engineioclient.Event, client *engineioclient.Client, open
 	fmt.Printf("Connection :%d\n", connectionCount)
 }
 
-var messageCount int64
-var connectionCount int64
-
 func handleOpened(ev *engineioclient.Event, client *engineioclient.Client) {
-	/*if ev.Type != "pong" {
-		log.Fatal("The next event should be pong!")
-	} */
+	//if ev.Type != "pong" {
+	//	log.Fatal("The next event should be pong!")
+	//}
 	switch ev.Type {
 	case "Message":
 		//fmt.Print("got a message")
 		atomic.AddInt64(&messageCount, 1)
 	}
-}
+} */
