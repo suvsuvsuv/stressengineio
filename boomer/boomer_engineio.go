@@ -76,7 +76,8 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 				//fmt.Print("got a message")
 				//atomic.AddInt64(&messageCount, 1)
 			}
-		default:
+			//default: bug fix: do not use default in select-for, which will cause cpu-usage
+			//fmt.Printf("Connected :%d\n", connectionCount)
 		}
 	}
 }
