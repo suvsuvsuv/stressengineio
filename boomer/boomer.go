@@ -101,6 +101,9 @@ func (b *Boomer) Run() {
 	}()
 	go showProgress(b.C) // sunny
 
+	if b.EnableEngineIo {
+		go readConsole()
+	}
 	b.runWorkers()
 
 	fmt.Printf("Finished %d requests\n\n", totalRequests)

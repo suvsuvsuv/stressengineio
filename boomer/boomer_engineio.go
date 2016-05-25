@@ -7,8 +7,8 @@ import (
 	"sync/atomic"
 )
 
-var messageCount int64
-var connectionCount int64
+var MessageCount int64
+var ConnectionCount int64
 
 // sunny :Special handling for web socket connection
 func (b *Boomer) runWorkerEngineIo(n int) {
@@ -67,14 +67,14 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 		case ev := <-client.Event:
 			switch ev.Type {
 			case "Open":
-				atomic.AddInt64(&connectionCount, 1)
-				fmt.Printf("Connected :%d\n", connectionCount)
+				atomic.AddInt64(&ConnectionCount, 1)
+				//fmt.Printf("Connected :%d\n", ConnectionCount)
 			case "Close":
-				atomic.AddInt64(&connectionCount, -1)
-				fmt.Printf("Connected -1:%d\n", connectionCount)
+				atomic.AddInt64(&ConnectionCount, -1)
+				fmt.Printf("Connected -1:%d\n", ConnectionCount)
 			case "Message":
 				//fmt.Print("got a message")
-				//atomic.AddInt64(&messageCount, 1)
+				//atomic.AddInt64(&MessageCount, 1)
 			}
 			//default: bug fix: do not use default in select-for, which will cause cpu-usage
 			//fmt.Printf("Connected :%d\n", connectionCount)
