@@ -168,7 +168,7 @@ func (c *Client) onPacket(packet *Packet) {
 		event.Type = "Ping"
 		now := time.Now()
 		diff := now.Sub(c.lastPing)
-		log.Printf("Got a ping event, replying now delta:%d", diff)
+		//log.Printf("Got a ping event, replying now delta:%d", diff)
 		c.lastPing = now
 		c.sender <- &Packet{Type: parser.PONG, Data: packet.Data}
 	case parser.PONG:
