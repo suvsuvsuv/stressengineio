@@ -18,7 +18,7 @@ Commands:
 
 const inputdelimiter = '\n'
 
-func readConsole() {
+func (b *Boomer) readConsole() {
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Enter command: ")
@@ -35,7 +35,7 @@ func readConsole() {
 			close(requestCountChan)
 			os.Exit(1)
 		case "gc":
-			fmt.Printf("Connected:%d\n", ConnectionCount)
+			fmt.Printf("Connected: %d/%d\n", ConnectionCount, b.C)
 		case "h":
 			fallthrough
 		case "?":

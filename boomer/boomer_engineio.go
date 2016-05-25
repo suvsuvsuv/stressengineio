@@ -68,7 +68,9 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 			switch ev.Type {
 			case "Open":
 				atomic.AddInt64(&ConnectionCount, 1)
-				//fmt.Printf("Connected :%d\n", ConnectionCount)
+				if int(ConnectionCount) == b.C {
+					fmt.Printf("Connected: %d/%d\n", ConnectionCount, b.C)
+				}
 			case "Close":
 				atomic.AddInt64(&ConnectionCount, -1)
 				fmt.Printf("Connected -1:%d\n", ConnectionCount)

@@ -102,7 +102,7 @@ func (b *Boomer) Run() {
 	go showProgress(b.C) // sunny
 
 	if b.EnableEngineIo {
-		go readConsole()
+		go b.readConsole()
 	}
 	b.runWorkers()
 
