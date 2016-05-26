@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"stressengineio/engineio2"
 	"strings"
 	"sync"
 	"time"
@@ -71,6 +72,9 @@ type Boomer struct {
 	ProxyAddr *url.URL
 	RawURL    string
 	results   chan *result
+
+	// pointer of engineio client
+	client *engineioclient2.Client
 }
 
 var totalRequests int

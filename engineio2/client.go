@@ -186,7 +186,7 @@ func (c *Client) On(event string, callback interface{}) {
 	c.eventMap[event] = callback
 }
 
-func (c *Client) Emit(event string, args ...interface{}) {
+/*func (c *Client) Emit(event string, args ...interface{}) {
 	if f, ok := c.eventMap[event]; ok {
 		fv := reflect.ValueOf(f)
 		if fv.Kind() != reflect.Func {
@@ -215,6 +215,20 @@ func (c *Client) Emit(event string, args ...interface{}) {
 		}
 		fv.Call(a)
 	}
+} */
+
+func (c *Client) Emit(event string, v interface{}) error {
+	obj := []interface{}{event, v}
+	result, err := json.Marshal(obj)
+	if nil != err {
+		return err
+	}
+	b := make([]byte, len(result)+1)
+	copy(b[1:], result)
+	b[0] = byte(_EVENT) + '0'
+
+	c.SendPacket(NewPacket(b))
+	return nil
 }
 
 func (c *Client) SendMessage(obj interface{}) error {

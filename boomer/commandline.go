@@ -36,6 +36,11 @@ func (b *Boomer) readConsole() {
 			os.Exit(1)
 		case "gc":
 			fmt.Printf("Connected: %d/%d\n", ConnectionCount, b.C)
+		case "sc":
+			for i := 0; i < b.C; i++ {
+				b.subscribe(i, "yy1")
+			}
+			fmt.Print("Subscribe done\n")
 		case "h":
 			fallthrough
 		case "?":

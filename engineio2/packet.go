@@ -8,6 +8,16 @@ import (
 
 type PacketType byte
 
+const (
+	_CONNECT PacketType = iota
+	_DISCONNECT
+	_EVENT
+	_ACK
+	_ERROR
+	_BINARY_EVENT
+	_BINARY_ACK
+)
+
 type Packet struct {
 	Type parser.PacketType
 	Data []byte
