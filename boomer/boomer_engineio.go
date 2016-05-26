@@ -12,6 +12,7 @@ var MessageCount int64
 var ConnectionCount int64
 var ShowReceivedMessages bool
 var StartCountMessages bool
+var SubscribeCount int64
 
 // sunny :Special handling for web socket connection
 func (b *Boomer) runWorkerEngineIo(n int) {
@@ -83,4 +84,5 @@ func (b *Boomer) subscribe(clientIdx int, topicName string) {
 		Topic string `json:"topic"`
 	}{topicName}
 	b.client.Emit("subscribeTopic", &t)
+	atomic.AddInt64(&SubscribeCount, 1)
 }

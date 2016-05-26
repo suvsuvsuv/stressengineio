@@ -13,7 +13,8 @@ Commands:
   q  	quit
   gc	gc connected count
   gm	get message count
-  sc <>	subscribe
+  sc 	subscribe
+  ssc	show subscribe count
   sm	show/hide received messages
   stm	start count messages
   edm	end message count
@@ -39,12 +40,14 @@ func (b *Boomer) readConsole() {
 			close(requestCountChan)
 			os.Exit(1)
 		case "gc":
-			fmt.Printf("Connected: %d/%d\n", ConnectionCount, b.C)
+			fmt.Printf("---Connected: %d/%d\n", ConnectionCount, b.C)
 		case "sc":
 			for i := 0; i < b.C; i++ {
-				b.subscribe(i, "yy1")
+				go b.subscribe(i, "yy1")
 			}
 			fmt.Print("Subscribe done\n")
+		case "ssc":
+			fmt.Printf("---SubscribeCount: %d\n", SubscribeCount)
 		case "sm":
 			ShowReceivedMessages = !ShowReceivedMessages
 			fmt.Printf("---ShowReceivedMessages: %v\n", ShowReceivedMessages)
