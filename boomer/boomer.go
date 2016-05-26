@@ -73,8 +73,7 @@ type Boomer struct {
 	RawURL    string
 	results   chan *result
 
-	// pointer of engineio client
-	client *engineioclient2.Client
+	clients []*engineioclient2.Client
 }
 
 var totalRequests int
@@ -181,15 +180,16 @@ func (b *Boomer) runWorkers() {
 
 	// Ignore the case where b.N % b.C != 0.
 	for i := 0; i < b.C; i++ {
-		go func() {
+		go func(id int) {
 			nPerC := b.N / b.C
 			if !b.EnableEngineIo {
 				b.runWorker(nPerC)
 			} else {
-				b.runWorkerEngineIo(nPerC) // defined in boomer_engineio.go
+				//log.Printf("%d %d\n", b.C, id)
+				b.runWorkerEngineIo(id) // defined in boomer_engineio.go
 			}
 			wg.Done()
-		}()
+		}(i)
 	}
 	wg.Wait()
 }

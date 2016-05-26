@@ -8,6 +8,7 @@ import (
 	"sync/atomic"
 )
 
+// pointer of engineio client
 var MessageCount int64
 var ConnectionCount int64
 var ShowReceivedMessages bool
@@ -16,16 +17,12 @@ var SubscribeCount int64
 
 // sunny :Special handling for web socket connection
 func (b *Boomer) runWorkerEngineIo(n int) {
+	b.clients = make([]*engineioclient2.Client, b.C)
 	ShowReceivedMessages = false
 	StartCountMessages = false
 	client, err := engineioclient2.Dial(b.RawURL, nil)
 	if err != nil {
 		log.Fatal("dial:", err)
-	} else {
-		//log.Print("connected")
-		//timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-		//client.SendMessage(&engineioclient.SendingObj{Type: "echo", Msg: timestamp})
-		b.client = client
 	}
 
 	//Loop:
@@ -34,6 +31,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 		case ev := <-client.Event:
 			switch ev.Type {
 			case "Open":
+				b.clients[n] = client
 				atomic.AddInt64(&ConnectionCount, 1)
 				if int(ConnectionCount) == b.C {
 					fmt.Printf("\nConnected: %d/%d\n", ConnectionCount, b.C)
@@ -41,7 +39,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 			case "Close":
 				atomic.AddInt64(&ConnectionCount, -1)
 				fmt.Printf("Connected -1:%d\n", ConnectionCount)
-				b.client = nil
+				b.clients[n] = nil
 			case "Message":
 				if StartCountMessages {
 					atomic.AddInt64(&MessageCount, 1)
@@ -56,7 +54,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 }
 
 func (b *Boomer) subscribe(clientIdx int, topicName string) {
-	if b.client == nil {
+	if b.clients[clientIdx] == nil {
 		return
 	}
 	deviceID := "boom" + strconv.Itoa(clientIdx)
@@ -74,7 +72,7 @@ func (b *Boomer) subscribe(clientIdx int, topicName string) {
 		Topics:        []string{},
 		LastPacketIds: nil,
 		LastUnicastID: ""}
-	err := b.client.Emit("pushId", v)
+	err := b.clients[clientIdx].Emit("pushId", v)
 	if err != nil {
 		log.Fatal("emit failed:", err)
 	}
@@ -83,6 +81,7 @@ func (b *Boomer) subscribe(clientIdx int, topicName string) {
 	t := struct {
 		Topic string `json:"topic"`
 	}{topicName}
-	b.client.Emit("subscribeTopic", &t)
+	b.clients[clientIdx].Emit("subscribeTopic", &t)
 	atomic.AddInt64(&SubscribeCount, 1)
+	//log.Printf("count: %d, id %d", SubscribeCount, clientIdx)
 }
