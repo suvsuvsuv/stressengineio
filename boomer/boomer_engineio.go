@@ -34,11 +34,11 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 				b.clients[n] = client
 				atomic.AddInt64(&ConnectionCount, 1)
 				if int(ConnectionCount) == b.C {
-					fmt.Printf("\nConnected: %d/%d\n", ConnectionCount, b.C)
+					fmt.Printf("\n---Connected: %d/%d\n", ConnectionCount, b.C)
 				}
 			case "Close":
 				atomic.AddInt64(&ConnectionCount, -1)
-				log.Printf("Disconnected by remote server:%d\n", ConnectionCount)
+				log.Printf("---Disconnected by remote server:%d\n", ConnectionCount)
 				b.clients[n] = nil
 			case "Message":
 				if StartCountMessages {
@@ -83,5 +83,7 @@ func (b *Boomer) subscribe(clientIdx int, topicName string) {
 	}{topicName}
 	b.clients[clientIdx].Emit("subscribeTopic", &t)
 	atomic.AddInt64(&SubscribeCount, 1)
-	//log.Printf("count: %d, id %d", SubscribeCount, clientIdx)
+	if int(SubscribeCount) == b.C {
+		fmt.Printf("\n---Subscibing done: %v\n", SubscribeCount)
+	}
 }

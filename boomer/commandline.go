@@ -16,14 +16,17 @@ Commands:
   sc 	subscribe
   ssc	show subscribe count
   sm	show/hide received messages
-  stm	start count messages
-  edm	end message count
+  stm	start counting messages
+  edm	end counting message count
   smc   show message count
 `
 
 const inputdelimiter = '\n'
 
+var doneSuscribe bool
+
 func (b *Boomer) readConsole() {
+	doneSuscribe = false
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Enter command: ")
@@ -42,10 +45,19 @@ func (b *Boomer) readConsole() {
 		case "gc":
 			fmt.Printf("---Connected: %d/%d\n", ConnectionCount, b.C)
 		case "sc":
+			if int(ConnectionCount) != b.C {
+				fmt.Printf("---Please wait till all clients are connected: %d/%d\n",
+					ConnectionCount, b.C)
+				continue
+			} else if doneSuscribe {
+				fmt.Print("---Already subscribe\n")
+				continue
+			}
+			doneSuscribe = true
 			for i := 0; i < b.C; i++ {
 				go b.subscribe(i, "yy1")
 			}
-			fmt.Print("Subscribe done\n")
+			fmt.Print("---Subscribing, please wait\n")
 		case "ssc":
 			fmt.Printf("---SubscribeCount: %d\n", SubscribeCount)
 		case "sm":
