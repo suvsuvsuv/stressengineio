@@ -10,9 +10,13 @@ import (
 
 var MessageCount int64
 var ConnectionCount int64
+var ShowReceivedMessages bool
+var StartCountMessages bool
 
 // sunny :Special handling for web socket connection
 func (b *Boomer) runWorkerEngineIo(n int) {
+	ShowReceivedMessages = false
+	StartCountMessages = false
 	client, err := engineioclient2.Dial(b.RawURL, nil)
 	if err != nil {
 		log.Fatal("dial:", err)
@@ -38,8 +42,12 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 				fmt.Printf("Connected -1:%d\n", ConnectionCount)
 				b.client = nil
 			case "Message":
-				//fmt.Print("got a message")
-				//atomic.AddInt64(&MessageCount, 1)
+				if StartCountMessages {
+					atomic.AddInt64(&MessageCount, 1)
+				}
+				if ShowReceivedMessages {
+					log.Print("Got a message")
+				}
 			}
 			//default: bug fix: do not use default in select-for, which will cause cpu-usage
 		}

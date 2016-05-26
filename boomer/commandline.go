@@ -14,6 +14,10 @@ Commands:
   gc	gc connected count
   gm	get message count
   sc <>	subscribe
+  sm	show/hide received messages
+  stm	start count messages
+  edm	end message count
+  smc   show message count
 `
 
 const inputdelimiter = '\n'
@@ -41,6 +45,18 @@ func (b *Boomer) readConsole() {
 				b.subscribe(i, "yy1")
 			}
 			fmt.Print("Subscribe done\n")
+		case "sm":
+			ShowReceivedMessages = !ShowReceivedMessages
+			fmt.Printf("---ShowReceivedMessages: %v\n", ShowReceivedMessages)
+		case "stm":
+			MessageCount = 0
+			StartCountMessages = true
+			//fmt.Printf("\nMessageCount: %v\n", MessageCount)
+		case "edm":
+			StartCountMessages = false
+			fmt.Printf("---MessageCount: %v\n", MessageCount)
+		case "smc":
+			fmt.Printf("---MessageCount: %v\n\n", MessageCount)
 		case "h":
 			fallthrough
 		case "?":

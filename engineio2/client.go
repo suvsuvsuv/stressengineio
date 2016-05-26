@@ -163,6 +163,7 @@ func (c *Client) onPacket(packet *Packet) {
 		event.Type = "Close"
 	case parser.MESSAGE:
 		//log.Printf("Got a message event!!! yeah!!")
+		//log.Printf("Got a Message %s", string(event.Data))
 		event.Type = "Message"
 	case parser.PING:
 		event.Type = "Ping"
