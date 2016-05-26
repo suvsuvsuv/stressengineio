@@ -38,7 +38,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 				}
 			case "Close":
 				atomic.AddInt64(&ConnectionCount, -1)
-				fmt.Printf("Connected -1:%d\n", ConnectionCount)
+				log.Printf("Disconnected by remote server:%d\n", ConnectionCount)
 				b.clients[n] = nil
 			case "Message":
 				if StartCountMessages {
