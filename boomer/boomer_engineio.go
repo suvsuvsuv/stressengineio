@@ -55,6 +55,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 
 func (b *Boomer) subscribe(clientIdx int, topicName string) {
 	if b.clients[clientIdx] == nil {
+		log.Fatal("connected failed:", clientIdx)
 		return
 	}
 	deviceID := "boom" + strconv.Itoa(clientIdx)
