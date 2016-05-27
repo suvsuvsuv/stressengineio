@@ -65,7 +65,7 @@ func (b *Boomer) readConsole() {
 		case "stm":
 			MessageCount = 0
 			StartCountMessages = true
-			fmt.Printf("\nMessageCount: %v\n", MessageCount)
+			fmt.Printf("---MessageCount: %v\n", MessageCount)
 		case "edm":
 			StartCountMessages = false
 			fmt.Printf("---MessageCount: %v\n", MessageCount)
