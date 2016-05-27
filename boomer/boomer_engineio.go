@@ -45,7 +45,8 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 					atomic.AddInt64(&MessageCount, 1)
 				}
 				if ShowReceivedMessages {
-					log.Print("Got a message")
+					log.Printf("Got a Message %s", string(ev.Data))
+					//log.Print("Got a message")
 				}
 			}
 			//default: bug fix: do not use default in select-for, which will cause cpu-usage
