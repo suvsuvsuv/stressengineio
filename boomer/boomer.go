@@ -106,6 +106,7 @@ func (b *Boomer) Run() {
 
 	if b.EnableEngineIo {
 		go b.readConsole()
+		b.clients = make([]*engineioclient2.Client, b.C)
 	}
 	b.runWorkers()
 

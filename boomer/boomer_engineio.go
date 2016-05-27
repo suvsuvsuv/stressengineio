@@ -17,7 +17,7 @@ var SubscribeCount int64
 
 // sunny :Special handling for web socket connection
 func (b *Boomer) runWorkerEngineIo(n int) {
-	b.clients = make([]*engineioclient2.Client, b.C)
+
 	ShowReceivedMessages = false
 	StartCountMessages = false
 	client, err := engineioclient2.Dial(b.RawURL, nil)
@@ -55,7 +55,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 
 func (b *Boomer) subscribe(clientIdx int, topicName string) {
 	if b.clients[clientIdx] == nil {
-		log.Fatal("connected failed:", clientIdx)
+		log.Fatal("connnection failed:", clientIdx)
 		return
 	}
 	deviceID := "boom" + strconv.Itoa(clientIdx)
