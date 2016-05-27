@@ -11,14 +11,13 @@ var commands = `
 Commands:
   h  	help
   q  	quit
-  gc	gc connected count
-  gm	get message count
+  shc	show connected count
+  shm	show message count
   sc 	subscribe
   ssc	show subscribe count
   sm	show/hide received messages
   stm	start counting messages
   edm	end counting message count
-  smc   show message count
 `
 
 const inputdelimiter = '\n'
@@ -42,7 +41,7 @@ func (b *Boomer) readConsole() {
 		case "q":
 			close(requestCountChan)
 			os.Exit(1)
-		case "gc":
+		case "shc":
 			fmt.Printf("---Connected: %d/%d\n", ConnectionCount, b.C)
 		case "sc":
 			if int(ConnectionCount) != b.C {
@@ -66,11 +65,11 @@ func (b *Boomer) readConsole() {
 		case "stm":
 			MessageCount = 0
 			StartCountMessages = true
-			//fmt.Printf("\nMessageCount: %v\n", MessageCount)
+			fmt.Printf("\nMessageCount: %v\n", MessageCount)
 		case "edm":
 			StartCountMessages = false
 			fmt.Printf("---MessageCount: %v\n", MessageCount)
-		case "smc":
+		case "shm":
 			fmt.Printf("---MessageCount: %v\n\n", MessageCount)
 		case "h":
 			fallthrough
