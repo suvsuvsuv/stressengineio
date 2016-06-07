@@ -7,8 +7,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using CommandLine;
-using CommandLine.Text;
 
 namespace Example.Http
 {
