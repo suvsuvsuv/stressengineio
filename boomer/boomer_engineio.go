@@ -49,7 +49,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 					//log.Print("Got a message")
 				}
 			}
-			//default: bug fix: do not use default in select-for, which will cause cpu-usage
+			//default: bug fix: do not use default in select-for, which will cause cpu-usage very high
 		}
 	}
 }
