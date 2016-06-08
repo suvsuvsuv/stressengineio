@@ -96,8 +96,7 @@ func (b *Boomer) readConsole() {
 			ShowReceivedMessages = !ShowReceivedMessages
 			fmt.Printf("---ShowReceivedMessages: %v\n", ShowReceivedMessages)
 		case "stm":
-			MessageCount = 0
-			StartCountMessages = true
+			startMessageCount()
 			fmt.Printf("---MessageCount: %v\n", MessageCount)
 		case "edm":
 			StartCountMessages = false
@@ -138,4 +137,9 @@ func (b *Boomer) readConsole() {
 			fmt.Println("unknow command")
 		}
 	}
+}
+
+func startMessageCount() {
+	MessageCount = 0
+	StartCountMessages = true
 }

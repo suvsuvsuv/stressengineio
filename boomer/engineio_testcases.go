@@ -17,8 +17,9 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 	SubscribeCount = 0
 
 	fmt.Printf("\n---Topic name: %v\n", topicName)
+	startMessageCount()
 
-	for times := 0; times < 2; times++ {
+	for times := 0; times < 3; times++ {
 		//1. sc
 		doneSuscribeWg.Add(b.C)
 		for i := 0; i < b.C; i++ {
@@ -35,10 +36,11 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 			pushIDSent = true
 		}
 		fmt.Printf("\n---Subscibing done: %v\n", SubscribeCount)
-		time.Sleep(5) // delay 5 sec
+		time.Sleep(3 * time.Second) // delay 5 sec
 		//send 1 msg
 		pushMsgToServer(topicName)
 
+		time.Sleep(1 * time.Second)
 		// unsubscribe
 		doneSuscribeWg.Add(b.C)
 		for i := 0; i < b.C; i++ {
@@ -46,6 +48,7 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 		}
 		fmt.Printf("---Unsubscibing done: %v\n", SubscribeCount)
 		doneSuscribeWg.Wait()
+		fmt.Printf("---%d: Received message count: %d---\n", times, MessageCount)
 	}
 }
 
