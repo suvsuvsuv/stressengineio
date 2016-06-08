@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 	"stressengineio/engineio2"
+	"sync"
 	"sync/atomic"
 )
 
@@ -54,11 +55,12 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 	}
 }
 
-func (b *Boomer) subscribe(clientIdx int, topicName string) {
+func (b *Boomer) sendPushID(clientIdx int) {
 	if b.clients[clientIdx] == nil {
 		log.Fatal("connnection failed:", clientIdx)
 		return
 	}
+
 	deviceID := "boom" + strconv.Itoa(clientIdx)
 	v := &struct {
 		ID            string                 `json:"id"`
@@ -79,13 +81,34 @@ func (b *Boomer) subscribe(clientIdx int, topicName string) {
 		log.Fatal("emit failed:", err)
 	}
 	//log.Printf("new client deviceId: %s", deviceID)
+}
 
+func (b *Boomer) subscribe(clientIdx int, topicName string, doneSuscribeWg *sync.WaitGroup) {
+	defer func() {
+		if doneSuscribeWg != nil {
+			(*doneSuscribeWg).Done()
+		}
+	}()
 	t := struct {
 		Topic string `json:"topic"`
 	}{topicName}
 	b.clients[clientIdx].Emit("subscribeTopic", &t)
 	atomic.AddInt64(&SubscribeCount, 1)
 	if int(SubscribeCount) == b.C {
-		fmt.Printf("\n---Subscibing done: %v\n", SubscribeCount)
+		if doneSuscribeWg == nil {
+			fmt.Printf("\n---Subscibing done: %v\n", SubscribeCount)
+		}
+	}
+
+}
+
+func (b *Boomer) unsubscribe(clientIdx int, topicName string) {
+	t := struct {
+		Topic string `json:"topic"`
+	}{topicName}
+	b.clients[clientIdx].Emit("unsubscribeTopic", &t)
+	atomic.AddInt64(&SubscribeCount, -1)
+	if int(SubscribeCount) == 0 {
+		fmt.Printf("\n---unsubscibing done: %v\n", SubscribeCount)
 	}
 }

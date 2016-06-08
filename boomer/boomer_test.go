@@ -133,3 +133,5 @@ func TestBody(t *testing.T) {
 		t.Errorf("Expected to boom 10 times, found %v", count)
 	}
 }
+package boomer
+
