@@ -102,13 +102,20 @@ func (b *Boomer) subscribe(clientIdx int, topicName string, doneSuscribeWg *sync
 
 }
 
-func (b *Boomer) unsubscribe(clientIdx int, topicName string) {
+func (b *Boomer) unsubscribe(clientIdx int, topicName string, doneSuscribeWg *sync.WaitGroup) {
+	defer func() {
+		if doneSuscribeWg != nil {
+			(*doneSuscribeWg).Done()
+		}
+	}()
 	t := struct {
 		Topic string `json:"topic"`
 	}{topicName}
 	b.clients[clientIdx].Emit("unsubscribeTopic", &t)
 	atomic.AddInt64(&SubscribeCount, -1)
 	if int(SubscribeCount) == 0 {
-		fmt.Printf("\n---unsubscibing done: %v\n", SubscribeCount)
+		if doneSuscribeWg == nil {
+			fmt.Printf("\n---unsubscibing done: %v\n", SubscribeCount)
+		}
 	}
 }
