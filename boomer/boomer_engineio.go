@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 	"stressengineio/engineio2"
+	"strings"
 	"sync"
 	"sync/atomic"
 )
@@ -42,6 +43,11 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 				log.Printf("---Disconnected by remote server:%d\n", ConnectionCount)
 				b.clients[n] = nil
 			case "Message":
+				//忽略push id返回消息
+				evDataStr := string(ev.Data)
+				if strings.Contains(evDataStr, "pushId") {
+					continue
+				}
 				if StartCountMessages {
 					atomic.AddInt64(&MessageCount, 1)
 				}
