@@ -46,8 +46,8 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 		for i := 0; i < b.C; i++ {
 			go b.unsubscribe(i, topicName, &doneSuscribeWg)
 		}
-		fmt.Printf("---Unsubscibing done: %v\n", SubscribeCount)
 		doneSuscribeWg.Wait()
+		fmt.Printf("---Unsubscibing done: %v\n", SubscribeCount)
 		fmt.Printf("---%d: Received message count: %d---\n", times, MessageCount)
 	}
 }
