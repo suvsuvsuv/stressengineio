@@ -114,7 +114,8 @@ func (b *Boomer) readConsole() {
 				continue
 			}
 			if i == 1 {
-				ApiHost = "http://wstest.yy.com:11001/api/push?pushAll=true&topic=TOPIC_NAME&json=123&timeToLive=12"
+				//ApiHost = "http://wstest.yy.com:11001/api/push?pushAll=true&topic=TOPIC_NAME&json=123&timeToLive=12"
+				ApiHost = "http://wsbench.yy.com:8088/api/push?pushAll=true&topic=TOPIC_NAME&json=123&timeToLive=12"
 				fmt.Print("Set to xuduo's api server\n")
 			} else if i == 2 {
 				ApiHost =
