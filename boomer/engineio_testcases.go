@@ -19,6 +19,7 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 	fmt.Printf("\n---Topic name: %v\n", topicName)
 	startMessageCount()
 
+	avgDuration := float64(0)
 	for times := 0; times < 3; times++ {
 		//1. sc
 		doneSuscribeWg.Add(b.C)
@@ -37,9 +38,25 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 		}
 		fmt.Printf("\n---Subscibing done: %v\n", SubscribeCount)
 		//send 1 msg
+		now := time.Now()
+		for i := 0; i < b.C; i++ {
+			b.startTimes[i] = now
+		}
 		pushMsgToServer(topicName)
+		//duration在runWorkerEngineIo() － case "Message"里计算
 
 		time.Sleep(5 * time.Second)
+		totalValideCount := 0
+		totalDuration := float64(0)
+		for i := 0; i < b.C; i++ {
+			if b.durations[i] <= 0 {
+				fmt.Printf("\n---Invalid duration: #%d/%d\n", i, b.durations[1])
+				continue
+			}
+			totalDuration += b.durations[i].Seconds()
+			totalValideCount++
+		}
+		avgDuration = totalDuration / float64(totalValideCount)
 		// unsubscribe
 		doneSuscribeWg.Add(b.C)
 		for i := 0; i < b.C; i++ {
@@ -48,6 +65,7 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 		doneSuscribeWg.Wait()
 		fmt.Printf("---Unsubscibing done: %v\n", SubscribeCount)
 		fmt.Printf("---%d: Received message count: %d---\n", times, MessageCount)
+		fmt.Printf("---%d: Avg duration: %f---\n", times, avgDuration)
 		time.Sleep(1 * time.Second)
 	}
 }

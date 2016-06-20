@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 // pointer of engineio client
@@ -50,6 +51,7 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 				}
 				if StartCountMessages {
 					atomic.AddInt64(&MessageCount, 1)
+					b.durations[n] = time.Now().Sub(b.startTimes[n])
 				}
 				if ShowReceivedMessages {
 					log.Printf("Got a Message %s", string(ev.Data))

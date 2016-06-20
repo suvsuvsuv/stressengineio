@@ -58,7 +58,9 @@ type Boomer struct {
 	RawURL    string
 	results   chan *result
 
-	clients []*engineioclient2.Client
+	clients    []*engineioclient2.Client
+	startTimes []time.Time
+	durations  []time.Duration
 }
 
 var totalRequests int
@@ -92,6 +94,8 @@ func (b *Boomer) Run() {
 	if b.EnableEngineIo {
 		go b.readConsole()
 		b.clients = make([]*engineioclient2.Client, b.C)
+		b.startTimes = make([]time.Time, b.C)
+		b.durations = make([]time.Duration, b.C)
 	}
 	b.runWorkers()
 
