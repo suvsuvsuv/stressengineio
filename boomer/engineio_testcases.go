@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const MAX_TIMES = 5
+
 func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 	// sc -> send a msg -> usc
 	var doneSuscribeWg sync.WaitGroup
@@ -19,8 +21,11 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 	fmt.Printf("\n---Topic name: %v\n", topicName)
 	startMessageCount()
 
-	avgDuration := float64(0)
-	for times := 0; times < 3; times++ {
+	totalAvgDuration := float64(0)
+	maxDuration := float64(0)
+	minDuration := float64(100) // big enough value of delay
+	for times := 0; times < MAX_TIMES; times++ {
+		avgDuration := float64(0)
 		//1. sc
 		doneSuscribeWg.Add(b.C)
 		for i := 0; i < b.C; i++ {
@@ -53,10 +58,18 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 				fmt.Printf("\n---Invalid duration: #%d/%d\n", i, b.durations[1])
 				continue
 			}
-			totalDuration += b.durations[i].Seconds()
+			currentDuration := b.durations[i].Seconds()
+			totalDuration += currentDuration
 			totalValideCount++
+			if maxDuration < currentDuration {
+				maxDuration = currentDuration
+			}
+			if minDuration > currentDuration {
+				minDuration = currentDuration
+			}
 		}
 		avgDuration = totalDuration / float64(totalValideCount)
+		totalAvgDuration += avgDuration
 		// unsubscribe
 		doneSuscribeWg.Add(b.C)
 		for i := 0; i < b.C; i++ {
@@ -65,9 +78,12 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 		doneSuscribeWg.Wait()
 		fmt.Printf("---Unsubscibing done: %v\n", SubscribeCount)
 		fmt.Printf("---%d: Received message count: %d---\n", times, MessageCount)
-		fmt.Printf("---%d: Avg duration: %f---\n", times, avgDuration)
+		fmt.Printf("---%d: Current Avg duration: %f---\n", times, avgDuration)
 		time.Sleep(1 * time.Second)
 	}
+	totalAvgDuration /= float64(MAX_TIMES)
+	fmt.Printf("---: Total Avg duration: %f, Max: %f, Min: %f---\n", totalAvgDuration,
+		maxDuration, minDuration)
 }
 
 const SUCCESS_RESPONSE = "\"code\":0"
