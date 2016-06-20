@@ -50,7 +50,7 @@ func (b *Boomer) testSubscribeThenUnsubscribe(topicName string) {
 		pushMsgToServer(topicName)
 		//duration在runWorkerEngineIo() － case "Message"里计算
 
-		time.Sleep(5 * time.Second)
+		time.Sleep(10 * time.Second)
 		totalValideCount := 0
 		totalDuration := float64(0)
 		for i := 0; i < b.C; i++ {
