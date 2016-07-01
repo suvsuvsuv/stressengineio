@@ -31,7 +31,6 @@ Commands:
 const inputdelimiter = '\n'
 
 func (b *Boomer) readConsole() {
-	doneSuscribe := false
 	topicName := "yy1"
 	ApiHost = "http://test.mlc.yy.com/api/bcproxy_svr/broadcast?appId=100001&sign=&data={%22topic%22:%22TOPIC_NAME%22,%22message%22:%22123%22,%22alive_time%22:12,%22is_order%22:true}"
 	for {
@@ -71,14 +70,10 @@ func (b *Boomer) readConsole() {
 				continue
 			}
 
-			if len(strings.Split(input, " ")) < 2{
-				fmt.Printf("---Please enter topic to subscribe\n")
-				continue
-			}
-
 			for i := 0; i < b.C; i++ {
 				go func(idx int) {
-					b.sendPushID(idx)
+					// 在connect的时候就sendPushId
+					//b.sendPushID(idx)
 					b.subscribe(idx, topicName,
 						//"u_live_data:57577d090000654e7c408add"
 						nil)
@@ -90,11 +85,8 @@ func (b *Boomer) readConsole() {
 				fmt.Printf("---Please wait till all clients are connected: %d/%d\n",
 					ConnectionCount, b.C)
 				continue
-			} else if !doneSuscribe {
-				fmt.Print("---Already unsubscribe\n")
-				continue
 			}
-			doneSuscribe = false
+			
 			for i := 0; i < b.C; i++ {
 				go b.unsubscribe(i, topicName, nil)
 			}
