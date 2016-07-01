@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var commands = `
@@ -15,7 +16,7 @@ Commands:
   shc	show connected count
   shm	show message count
   sc 	subscribe
-  usc   unsubscribe
+  usc 	unsubscribe
   ssc	show subscribe count
   sm	show/hide received messages
   stm	start counting messages
@@ -23,6 +24,8 @@ Commands:
   pm    push a message
   set   set api host, 1: xuduo; 2: liushihai
   tst1  run test 1
+  addTag add tag
+  removeTag 
 `
 
 const inputdelimiter = '\n'
@@ -32,6 +35,10 @@ func (b *Boomer) readConsole() {
 	topicName := "yy1"
 	ApiHost = "http://test.mlc.yy.com/api/bcproxy_svr/broadcast?appId=100001&sign=&data={%22topic%22:%22TOPIC_NAME%22,%22message%22:%22123%22,%22alive_time%22:12,%22is_order%22:true}"
 	for {
+		if int(ConnectionCount) != b.C {
+			time.Sleep(time.Second * 1)
+			continue
+		}
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Enter command: ")
 		input, err := reader.ReadString(inputdelimiter)
@@ -62,11 +69,13 @@ func (b *Boomer) readConsole() {
 				fmt.Printf("---Please wait till all clients are connected: %d/%d\n",
 					ConnectionCount, b.C)
 				continue
-			} else if doneSuscribe {
-				fmt.Print("---Already subscribe\n")
+			}
+
+			if len(strings.Split(input, " ")) < 2{
+				fmt.Printf("---Please enter topic to subscribe\n")
 				continue
 			}
-			doneSuscribe = true
+
 			for i := 0; i < b.C; i++ {
 				go func(idx int) {
 					b.sendPushID(idx)
@@ -130,6 +139,14 @@ func (b *Boomer) readConsole() {
 				continue
 			}
 			go b.testSubscribeThenUnsubscribe(ss[1])
+		case "addTag":
+			for i := 0; i < b.C; i++ {
+				go b.addTag(i, strings.Split(input, " ")[1])
+			}
+		case "removeTag":
+			for i := 0; i < b.C; i++ {
+				go b.removeTag(i, strings.Split(input, " ")[1])
+			}
 		case "h":
 			fallthrough
 		case "?":

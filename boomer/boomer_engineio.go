@@ -9,6 +9,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"math/rand"
 )
 
 // pointer of engineio client
@@ -36,9 +37,12 @@ func (b *Boomer) runWorkerEngineIo(n int) {
 			case "Open":
 				b.clients[n] = client
 				atomic.AddInt64(&ConnectionCount, 1)
+				
 				if int(ConnectionCount) == b.C {
 					fmt.Printf("\n---Connected: %d/%d\n", ConnectionCount, b.C)
+
 				}
+				b.sendPushID(n)
 			case "Close":
 				atomic.AddInt64(&ConnectionCount, -1)
 				log.Printf("---Disconnected by remote server:%d\n", ConnectionCount)
@@ -69,7 +73,13 @@ func (b *Boomer) sendPushID(clientIdx int) {
 		return
 	}
 
-	deviceID := "boom" + strconv.Itoa(clientIdx)
+	idPrefix := b.PushIdPrefix
+	if idPrefix == ""  || len(idPrefix) < 16 {
+         idPrefix = string(Krand(16, KC_RAND_KIND_ALL))
+	}
+
+	deviceID := idPrefix + strconv.Itoa(clientIdx)
+
 	v := &struct {
 		ID            string                 `json:"id"`
 		Version       int                    `json:"version"`
@@ -79,7 +89,7 @@ func (b *Boomer) sendPushID(clientIdx int) {
 		LastUnicastID string                 `json:"lastUnicastId"`
 	}{
 		ID:            deviceID,
-		Version:       2,
+		Version:       1,
 		Platform:      "stressEngineIO",
 		Topics:        []string{},
 		LastPacketIds: nil,
@@ -89,6 +99,30 @@ func (b *Boomer) sendPushID(clientIdx int) {
 		log.Fatal("emit failed:", err)
 	}
 	//log.Printf("new client deviceId: %s", deviceID)
+}
+
+func (b *Boomer) addTag(clientIdx int, tagName string) {
+	if b.clients[clientIdx] == nil {
+		log.Fatal("connnection failed:", clientIdx)
+		return
+	}
+
+	t := struct {
+		Topic string `json:"tag"`
+	}{tagName}
+	b.clients[clientIdx].Emit("addTag", &t)
+}
+
+func (b *Boomer) removeTag(clientIdx int, tagName string) {
+	if b.clients[clientIdx] == nil {
+		log.Fatal("connnection failed:", clientIdx)
+		return
+	}
+
+	t := struct {
+		Topic string `json:"tag"`
+	}{tagName}
+	b.clients[clientIdx].Emit("removeTag", &t)
 }
 
 func (b *Boomer) subscribe(clientIdx int, topicName string, doneSuscribeWg *sync.WaitGroup) {
@@ -126,4 +160,26 @@ func (b *Boomer) unsubscribe(clientIdx int, topicName string, doneSuscribeWg *sy
 			fmt.Printf("\n---unsubscibing done: %v\n", SubscribeCount)
 		}
 	}
+}
+
+const (
+    KC_RAND_KIND_NUM   = 0  // 纯数字
+    KC_RAND_KIND_LOWER = 1  // 小写字母
+    KC_RAND_KIND_UPPER = 2  // 大写字母
+    KC_RAND_KIND_ALL   = 3  // 数字、大小写字母
+)
+ 
+// 随机字符串
+func Krand(size int, kind int) []byte {
+    ikind, kinds, result := kind, [][]int{[]int{10, 48}, []int{26, 97}, []int{26, 65}}, make([]byte, size)
+    is_all := kind > 2 || kind < 0
+    rand.Seed(time.Now().UnixNano())
+    for i :=0; i < size; i++ {
+        if is_all { // random ikind
+            ikind = rand.Intn(3)
+        }
+        scope, base := kinds[ikind][0], kinds[ikind][1]
+        result[i] = uint8(base+rand.Intn(scope))
+    }
+    return result
 }

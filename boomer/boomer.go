@@ -47,6 +47,7 @@ type Boomer struct {
 	DisableKeepAlives bool
 
 	EnableEngineIo bool // sunny
+	PushIdPrefix string
 
 	// Output represents the output type. If "csv" is provided, the
 	// output will be dumped as a csv stream.
@@ -79,6 +80,7 @@ func (b *Boomer) Run() {
 	start := time.Now()
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
+
 
 	go func() {
 		<-c

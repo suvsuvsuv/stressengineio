@@ -53,6 +53,7 @@ var (
 	accept      = flag.String("A", "", "")
 	contentType = flag.String("T", "text/html", "")
 	authHeader  = flag.String("a", "", "")
+	pushIdPrefix  = flag.String("prefix-id", "", "")
 
 	output = flag.String("o", "", "")
 
@@ -95,6 +96,7 @@ Options:
   -cpus                 Number of used cpu cores.
                         (default for current machine is %d cores)
   -ei	    			Enable engine-io connection
+  -prefix-id            pushID prefix
 `
 
 func main() {
@@ -189,6 +191,7 @@ func main() {
 		DisableCompression: *disableCompression,
 		DisableKeepAlives:  *disableKeepAlives,
 		EnableEngineIo:     *enableEngineIo,
+		PushIdPrefix:       *pushIdPrefix,
 		ProxyAddr:          proxyURL,
 		RawURL:             url,
 		Output:             *output,
